@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>รดน้ำต้นไม้ของเรา</title>
+<link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sky-a: #c9d6f2; --sky-b: #f3e3dc; --glow: #ffe9a8;
+  --ink: #3b3350; --ink-soft: #6b6283;
+  --ground: #7a5a4a; --ground-top: #8fb07a;
+  --btn: #ffffff; --btn-edge: #b9b3d6; --card: #ffffff; --accent: #d9738a;
+  --dot: rgba(59,51,80,.18); --dot-on: #d9738a;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --sky-a: #1d2140; --sky-b: #4a3550; --glow: #ffcf7a;
+    --ink: #f3eefc; --ink-soft: #b9b0d4;
+    --ground: #3d2b2b; --ground-top: #4f7a52;
+    --btn: #2b2850; --btn-edge: #4a4580; --card: #2b2850; --accent: #f08aa2;
+    --dot: rgba(243,238,252,.2); --dot-on: #f08aa2;
+  }
+}
+:root[data-theme="dark"] {
+  --sky-a: #1d2140; --sky-b: #4a3550; --glow: #ffcf7a;
+  --ink: #f3eefc; --ink-soft: #b9b0d4;
+  --ground: #3d2b2b; --ground-top: #4f7a52;
+  --btn: #2b2850; --btn-edge: #4a4580; --card: #2b2850; --accent: #f08aa2;
+  --dot: rgba(243,238,252,.2); --dot-on: #f08aa2;
+}
+html { height: 100%; scroll-padding-top: env(safe-area-inset-top, 0px); }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  height: 100%; font-family: 'Mali', 'Sarabun', sans-serif; color: var(--ink);
+  background: linear-gradient(180deg, var(--sky-a), var(--sky-b));
+  overflow: hidden; -webkit-tap-highlight-color: transparent;
+}
+.glow {
+  position: fixed; inset: 0; pointer-events: none; opacity: 0; transition: opacity 1.4s ease;
+  background: radial-gradient(ellipse at 50% 70%, var(--glow), transparent 65%);
+}
+main {
+  position: relative; height: 100%; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; padding: 24px; text-align: center;
+  transition: opacity .8s;
+}
+main.done { opacity: 0; pointer-events: none; }
+h1 { font-size: 1.35rem; font-weight: 600; min-height: 2.2em; }
+#status { font-size: 1rem; color: var(--ink-soft); margin: 6px 0 14px; min-height: 1.6em; }
+.dots { display: flex; gap: 10px; justify-content: center; margin-bottom: 8px; }
+.dots span { width: 12px; height: 12px; border-radius: 50%; background: var(--dot); transition: background .4s, transform .4s; }
+.dots span.on { background: var(--dot-on); transform: scale(1.25); }
+.stage { position: relative; width: 220px; height: 230px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; margin-bottom: 28px; }
+#plant { font-size: 7.5rem; line-height: 1; margin-bottom: -22px; z-index: 2; transition: transform .35s cubic-bezier(.2,.9,.3,1.4); }
+#plant.shake { animation: shake .4s; }
+@keyframes shake { 25% { transform: translateX(-8px) } 75% { transform: translateX(8px) } }
+.mound { width: 190px; height: 56px; border-radius: 95px 95px 24px 24px / 56px 56px 24px 24px; background: linear-gradient(var(--ground-top) 0 22%, var(--ground) 22%); z-index: 1; }
+.fx { position: absolute; left: 50%; top: 0; font-size: 1.6rem; pointer-events: none; z-index: 3; animation: fall 1s ease-in forwards; }
+@keyframes fall { from { transform: translate(var(--dx), -10px); opacity: 0 } 15% { opacity: 1 } to { transform: translate(var(--dx), 150px); opacity: 0 } }
+.sunfx { position: absolute; top: -10px; left: 50%; font-size: 4rem; margin-left: -2rem; animation: sun 1.2s ease-out forwards; pointer-events: none; z-index: 0; }
+@keyframes sun { from { transform: scale(.4); opacity: 0 } 40% { opacity: 1 } to { transform: scale(1.3); opacity: 0 } }
+.controls { display: flex; gap: 16px; }
+button { font: inherit; font-size: 1.15rem; color: var(--ink); background: var(--btn); border: 2px solid var(--btn-edge); padding: 14px 26px; border-radius: 99px; box-shadow: 0 4px 0 var(--btn-edge); cursor: pointer; transition: transform .1s, box-shadow .1s; touch-action: manipulation; }
+button:active { transform: translateY(4px); box-shadow: 0 0 0 var(--btn-edge); }
+button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.card { position: fixed; inset: 0; padding: calc(24px + env(safe-area-inset-top, 0px)) 24px calc(24px + env(safe-area-inset-bottom, 0px)); overflow-y: auto; display: flex; opacity: 0; pointer-events: none; transition: opacity 1s; }
+.card.show { opacity: 1; pointer-events: auto; }
+.card-in { margin: auto; width: 100%; max-width: 420px; background: var(--card); border-radius: 28px; padding: 36px 26px; text-align: center; box-shadow: 0 18px 50px rgba(40,30,80,.18); }
+.card h2 { font-size: 1.7rem; color: var(--accent); margin-bottom: 18px; }
+.card p { font-size: 1.1rem; line-height: 1.8; margin-bottom: 14px; }
+.card .to { color: var(--ink-soft); text-align: left; }
+.card .sign { color: var(--ink-soft); margin-top: 18px; }
+.reply { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
+.reply button { width: 100%; font-size: 1.05rem; }
+#answer { font-size: 1.1rem; line-height: 1.7; margin-top: 22px; color: var(--accent); }
+@media (prefers-reduced-motion: reduce) { * { animation-duration: .01s !important; transition-duration: .01s !important; } }
+</style>
+</head>
+<body>
+<div class="glow" id="glow"></div>
+
+<main id="game">
+  <h1 id="title">ช่วยดูแลต้นไม้นี้หน่อยนะ 🌱</h1>
+  <p id="status" aria-live="polite">เริ่มจากรดน้ำก่อนนะ 💧</p>
+  <div class="dots" id="dots" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+  <div class="stage" id="stage">
+    <div id="plant">🌱</div>
+    <div class="mound"></div>
+  </div>
+  <div class="controls">
+    <button type="button" data-act="water">💧 รดน้ำ</button>
+    <button type="button" data-act="sun">☀️ รับแดด</button>
+  </div>
+</main>
+
+<section class="card" id="card" aria-hidden="true">
+  <div class="card-in">
+    <h2>โตเต็มที่แล้ว 🌻</h2>
+    <p class="to" id="to" hidden></p>
+    <p>ชั้นขอโทษนะที่ช่วงก่อนหน้านี้<br>ชั้นละเลยและดูแลความรู้สึกของเธอไม่ดีพอ</p>
+    <p id="specific" hidden></p>
+    <p>ขอบคุณที่ให้โอกาสชั้น<br>รดน้ำพรวนดินความรักของเราอีกครั้งนะ<br>ชั้นจะดูแลเธอให้ดีที่สุดเลยนะ</p>
+    <p class="sign" id="from" hidden></p>
+  </div>
+</section>
+
+<script>
+// แก้ตรงนี้: ชื่อคนรับ ชื่อคนส่ง และเรื่องที่อยากขอโทษโดยเฉพาะ (เว้นว่างได้)
+var CONFIG = { to: "auan"};
+
+var stages = ['🌱', '🌿', '🪴', '🌸', '🌻'];
+var seq = ['water', 'sun', 'water', 'sun'];
+var titles = ['ช่วยดูแลต้นไม้นี้หน่อยนะ 🌱', 'ดูสิ งอกแล้ว!', 'ใบเริ่มออกแล้วนะ', 'ใกล้แล้ว...', 'โตเต็มที่แล้ว'];
+var needs = ['เริ่มจากรดน้ำก่อนนะ 💧', 'ตอนนี้ต้นไม้อยากได้แสงแดด ☀️', 'ต้นไม้กระหายน้ำอีกแล้ว 💧', 'ขอแสงแดดอีกนิดเดียว ☀️', ''];
+var wrong = { water: 'ต้นไม้อิ่มน้ำแล้ว~ ขอแดดบ้างนะ ☀️', sun: 'แดดพอแล้ว~ ขอน้ำหน่อยนะ 💧' };
+var step = 0, busy = false;
+
+var $ = function (id) { return document.getElementById(id); };
+var plant = $('plant'), stage = $('stage'), dots = $('dots').children;
+
+if (CONFIG.to) { $('to').textContent = 'ถึง ' + CONFIG.to; $('to').hidden = false; }
+
+function effect(type) {
+  var i, el;
+  if (type === 'water') {
+    for (i = 0; i < 6; i++) {
+      el = document.createElement('span');
+      el.className = 'fx'; el.textContent = '💧';
+      el.style.setProperty('--dx', (i * 22 - 60) + 'px');
+      el.style.animationDelay = (i * 0.08) + 's';
+      stage.appendChild(el);
+      setTimeout(function (e) { e.remove(); }.bind(null, el), 1400);
+    }
+  } else {
+    el = document.createElement('span');
+    el.className = 'sunfx'; el.textContent = '☀️';
+    stage.appendChild(el);
+    setTimeout(function () { el.remove(); }, 1300);
+  }
+}
+
+function press(type) {
+  if (busy || step >= seq.length) return;
+  if (type !== seq[step]) {
+    $('status').textContent = wrong[type];
+    plant.classList.remove('shake'); void plant.offsetWidth; plant.classList.add('shake');
+    return;
+  }
+  busy = true;
+  effect(type);
+  plant.style.transform = 'scale(.85)';
+  setTimeout(function () {
+    dots[step].classList.add('on');
+    step++;
+    plant.textContent = stages[step];
+    plant.style.transform = 'scale(1.12)';
+    setTimeout(function () { plant.style.transform = 'scale(1)'; }, 220);
+    $('title').textContent = titles[step];
+    $('status').textContent = needs[step];
+    $('glow').style.opacity = String(step / seq.length);
+    if (step === seq.length) {
+      setTimeout(function () {
+        $('game').classList.add('done');
+        $('card').classList.add('show');
+        $('card').setAttribute('aria-hidden', 'false');
+      }, 1500);
+    } else {
+      busy = false;
+    }
+  }, 900);
+}
+
+document.querySelectorAll('[data-act]').forEach(function (b) {
+  b.addEventListener('click', function () { press(b.dataset.act); });
+});
+</script>
+</body>
+</html>
